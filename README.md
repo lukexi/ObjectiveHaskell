@@ -1,7 +1,5 @@
 Tools for making it easier to integrate Haskell and Objective-C.
 
-**Only Mac OS X is supported at the moment. iOS may be supported in the future.**
-
 # Getting Started
 
 **To obtain Objective-Haskell:**
@@ -24,7 +22,7 @@ You will also need to have the latest `haskell-platform` installed via [Homebrew
     - Add a build rule for files matching `*.hs` which executes the following
       script (where `ObjectiveHaskell` is the path to the repository):
       
-      `ObjectiveHaskell/Configuration/compileHaskell.sh`
+      `"$SRCROOT/ObjectiveHaskell/Configuration/compileHaskell.sh"`
       
       and has the output files:
 
