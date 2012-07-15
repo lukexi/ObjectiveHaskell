@@ -746,6 +746,7 @@
 			baseConfigurationReference = D090622515B0DE72001CAC43 /* iOS-StaticLibrary.xcconfig */;
 			buildSettings = {
 				DSTROOT = /tmp/ObjectiveHaskell_iOS.dst;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = ObjectiveHaskell;
 			};
 			name = Debug;
@@ -755,6 +756,7 @@
 			baseConfigurationReference = D090622515B0DE72001CAC43 /* iOS-StaticLibrary.xcconfig */;
 			buildSettings = {
 				DSTROOT = /tmp/ObjectiveHaskell_iOS.dst;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = ObjectiveHaskell;
 				VALIDATE_PRODUCT = YES;
 			};
