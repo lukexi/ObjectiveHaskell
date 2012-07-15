@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D09061EA15B0DD37001CAC43"
+               BlueprintIdentifier = "D01D729715B3521D00044CE2"
                BuildableName = "libObjectiveHaskell.a"
-               BlueprintName = "ObjectiveHaskell Mac"
+               BlueprintName = "ObjectiveHaskell iOS"
                ReferencedContainer = "container:ObjectiveHaskell.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,9 +28,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D09061FE15B0DD38001CAC43"
-               BuildableName = "ObjectiveHaskellTests Mac.octest"
-               BlueprintName = "ObjectiveHaskellTests Mac"
+               BlueprintIdentifier = "D01D72A615B3521D00044CE2"
+               BuildableName = "ObjectiveHaskell iOS Tests.octest"
+               BlueprintName = "ObjectiveHaskell iOS Tests"
                ReferencedContainer = "container:ObjectiveHaskell.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -46,9 +46,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D09061FE15B0DD38001CAC43"
-               BuildableName = "ObjectiveHaskellTests Mac.octest"
-               BlueprintName = "ObjectiveHaskellTests Mac"
+               BlueprintIdentifier = "D01D72A615B3521D00044CE2"
+               BuildableName = "ObjectiveHaskell iOS Tests.octest"
+               BlueprintName = "ObjectiveHaskell iOS Tests"
                ReferencedContainer = "container:ObjectiveHaskell.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -62,7 +62,6 @@
       buildConfiguration = "Debug"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
-      enableOpenGLFrameCaptureMode = "0"
       allowLocationSimulation = "YES">
       <AdditionalOptions>
       </AdditionalOptions>
