@@ -1,5 +1,6 @@
 module ObjectiveHaskell.ObjC (
         Sel, Class, Id, UnsafeId,
+        ObjCBool, NSUInteger,
         Bridged, toObjC, fromObjC,
         selector, getClass,
         retainedId, unretainedId, autorelease, withUnsafeId,
@@ -100,7 +101,7 @@ bindUnsafeIds (t, v) stmts
         let retainExp = AppE (VarE 'retainedId) (VarE v)
         in BindS (VarP v) retainExp : stmts
 
-    | otherwise = NoBindS (VarE v) : stmts
+    | otherwise = stmts
 
 -- Given a string name to export to Objective-C, an exported type signature, and the name of the function which should be invoked,
 -- defines a trampoline which will automatically wrap UnstableId values for Haskell, and unwrap any Id return value for Objective-C.
