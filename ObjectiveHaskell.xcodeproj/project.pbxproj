@@ -40,12 +40,13 @@
 		D09061EF15B0DD37001CAC43 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D09061EE15B0DD37001CAC43 /* Cocoa.framework */; };
 		D090620115B0DD38001CAC43 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D090620015B0DD38001CAC43 /* SenTestingKit.framework */; };
 		D090620215B0DD38001CAC43 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D09061EE15B0DD37001CAC43 /* Cocoa.framework */; };
-		D090620515B0DD38001CAC43 /* libObjectiveHaskell.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D09061EB15B0DD37001CAC43 /* libObjectiveHaskell.a */; };
+		D090620515B0DD38001CAC43 /* libObjectiveHaskell Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D09061EB15B0DD37001CAC43 /* libObjectiveHaskell Mac.a */; };
 		D090620B15B0DD38001CAC43 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D090620915B0DD38001CAC43 /* InfoPlist.strings */; };
 		D090620E15B0DD38001CAC43 /* ObjectiveHaskellTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D090620D15B0DD38001CAC43 /* ObjectiveHaskellTests.m */; };
 		D090624A15B0E4C0001CAC43 /* FibTest.hs in Sources */ = {isa = PBXBuildFile; fileRef = D090624815B0E450001CAC43 /* FibTest.hs */; };
 		D090625015B0E613001CAC43 /* NSObject+OHInitializationExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D090624E15B0E613001CAC43 /* NSObject+OHInitializationExtensions.m */; };
 		D0B232EE15B295380045568B /* libffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D0B232EA15B2952B0045568B /* libffi.a */; };
+		D0E61A7C15B4FFF300667D8A /* NSValue.hs in Sources */ = {isa = PBXBuildFile; fileRef = D0E61A6915B4FEDE00667D8A /* NSValue.hs */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -172,7 +173,7 @@
 		D04FC23D15B2AAC300C58F14 /* compileHaskell.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = compileHaskell.sh; sourceTree = "<group>"; };
 		D04FC25915B2B26000C58F14 /* THUtils.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = THUtils.hs; sourceTree = "<group>"; };
 		D062D78D15B38B80003871F7 /* NSData.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NSData.hs; sourceTree = "<group>"; };
-		D09061EB15B0DD37001CAC43 /* libObjectiveHaskell.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libObjectiveHaskell.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D09061EB15B0DD37001CAC43 /* libObjectiveHaskell Mac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libObjectiveHaskell Mac.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D09061EE15B0DD37001CAC43 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		D09061F115B0DD37001CAC43 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		D09061F215B0DD37001CAC43 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -208,6 +209,7 @@
 		D090624E15B0E613001CAC43 /* NSObject+OHInitializationExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+OHInitializationExtensions.m"; sourceTree = "<group>"; };
 		D0B232DF15B2952B0045568B /* libffi.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libffi.xcodeproj; path = libffi/libffi.xcodeproj; sourceTree = "<group>"; };
 		D0E525ED15B1122500C13802 /* MsgSend.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MsgSend.hs; sourceTree = "<group>"; };
+		D0E61A6915B4FEDE00667D8A /* NSValue.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NSValue.hs; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -245,7 +247,7 @@
 			files = (
 				D090620115B0DD38001CAC43 /* SenTestingKit.framework in Frameworks */,
 				D090620215B0DD38001CAC43 /* Cocoa.framework in Frameworks */,
-				D090620515B0DD38001CAC43 /* libObjectiveHaskell.a in Frameworks */,
+				D090620515B0DD38001CAC43 /* libObjectiveHaskell Mac.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -448,6 +450,7 @@
 				D045A10B15B2794400DE48BF /* NSDictionary.hs */,
 				D045A10815B2793300DE48BF /* NSObject.hs */,
 				D045A10F15B27B4900DE48BF /* NSString.hs */,
+				D0E61A6915B4FEDE00667D8A /* NSValue.hs */,
 				D03E2D2D15B1599200679DB0 /* ObjC.hs */,
 				D04FC25915B2B26000C58F14 /* THUtils.hs */,
 			);
@@ -522,7 +525,7 @@
 			);
 			name = "ObjectiveHaskell Mac";
 			productName = ObjectiveHaskell;
-			productReference = D09061EB15B0DD37001CAC43 /* libObjectiveHaskell.a */;
+			productReference = D09061EB15B0DD37001CAC43 /* libObjectiveHaskell Mac.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		D09061FE15B0DD38001CAC43 /* ObjectiveHaskellTests Mac */ = {
@@ -685,6 +688,7 @@
 				D045A10C15B27AD600DE48BF /* NSArray.hs in Sources */,
 				D045A11015B2807A00DE48BF /* NSString.hs in Sources */,
 				D062D78E15B38B90003871F7 /* NSData.hs in Sources */,
+				D0E61A7C15B4FFF300667D8A /* NSValue.hs in Sources */,
 				D04FC25A15B2B26F00C58F14 /* THUtils.hs in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
