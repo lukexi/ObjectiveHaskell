@@ -30,7 +30,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D09061FE15B0DD38001CAC43"
                BuildableName = "ObjectiveHaskellTests Mac.octest"
-               BlueprintName = "ObjectiveHaskellTests Mac"
+               BlueprintName = "ObjectiveHaskell Mac Tests"
                ReferencedContainer = "container:ObjectiveHaskell.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -48,7 +48,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D09061FE15B0DD38001CAC43"
                BuildableName = "ObjectiveHaskellTests Mac.octest"
-               BlueprintName = "ObjectiveHaskellTests Mac"
+               BlueprintName = "ObjectiveHaskell Mac Tests"
                ReferencedContainer = "container:ObjectiveHaskell.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -62,7 +62,6 @@
       buildConfiguration = "Debug"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
-      enableOpenGLFrameCaptureMode = "0"
       allowLocationSimulation = "YES">
       <AdditionalOptions>
       </AdditionalOptions>
