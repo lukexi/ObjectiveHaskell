@@ -7,6 +7,7 @@
 //
 
 #import <ObjectiveHaskell/NSArray+OHExtensions.h>
+#import <ObjectiveHaskell/NSSet+OHExtensions.h>
 #import <ObjectiveHaskell/NSData+OHExtensions.h>
 #import <ObjectiveHaskell/NSDictionary+OHExtensions.h>
 #import <ObjectiveHaskell/NSNumber+OHExtensions.h>

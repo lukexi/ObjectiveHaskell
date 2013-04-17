@@ -7,9 +7,11 @@ import Control.Applicative
 import Data.ByteString.Lazy as ByteString
 import Data.Map as Map
 import Data.Sequence as Seq
+import qualified Data.Set as Set
 import Foreign.C.Types
 import Foreign.Ptr
 import ObjectiveHaskell.NSArray
+import ObjectiveHaskell.NSSet
 import ObjectiveHaskell.NSData
 import ObjectiveHaskell.NSDictionary
 import ObjectiveHaskell.NSNumber
@@ -29,6 +31,13 @@ addFoobarToArray' nsarr = do
     foobar <- toNSString "foobar"
 
     toNSArray $ s |> foobar
+
+addFoobarToSet' :: Id -> IO Id
+addFoobarToSet' nsset = do
+    s <- fromNSSet nsset
+    foobar <- toNSString "foobar"
+    
+    toNSSet $ Set.insert foobar s
 
 setFooToBar' :: Id -> IO Id
 setFooToBar' nsdict = do
@@ -64,6 +73,7 @@ httpsUrlFromHostString str = do
 
 exportFunc "appendFoobar" [t| UnsafeId -> IO UnsafeId |] 'appendFoobar'
 exportFunc "addFoobarToArray" [t| UnsafeId -> IO UnsafeId |] 'addFoobarToArray'
+exportFunc "addFoobarToSet" [t| UnsafeId -> IO UnsafeId |] 'addFoobarToSet'
 exportFunc "setFooToBar" [t| UnsafeId -> IO UnsafeId |] 'setFooToBar'
 exportFunc "appendByte" [t| UnsafeId -> CUChar -> IO UnsafeId |] 'appendByte'
 exportFunc "nullNSValue" [t| IO UnsafeId |] 'nullNSValue'

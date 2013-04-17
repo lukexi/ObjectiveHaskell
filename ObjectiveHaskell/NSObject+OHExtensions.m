@@ -21,7 +21,8 @@
 	hs_init(_NSGetArgc(), _NSGetArgv());
 
 	// Shut down the Haskell runtime upon exit
-	atexit(&hs_exit);
+    // lukexi: getting "unknown closure type 32" errors from Haskell runtime when this is enabled, killing it while I investigate.
+//	atexit(&hs_exit);
 }
 
 @end

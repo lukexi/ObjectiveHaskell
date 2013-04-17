@@ -20,7 +20,7 @@ OUTPUT_FILE="$BUILT_PRODUCTS_DIR/lib$TARGET_NAME-hsbuild.a"
 TARGET_OBJECTS_FOLDER="$DERIVED_FILE_DIR/hs"
 
 # Additional flags to pass to GHC when building.
-GHC_FLAGS="-Werror -fwarn-incomplete-patterns -fwarn-dodgy-imports -fwarn-dodgy-exports -fwarn-unused-binds -fwarn-hi-shadowing -fwarn-identities -fwarn-monomorphism-restriction -O -threaded -framework Foundation"
+GHC_FLAGS="-Werror -fwarn-incomplete-patterns -fwarn-dodgy-imports -fwarn-dodgy-exports -fwarn-unused-binds -fwarn-hi-shadowing -fwarn-identities -fwarn-monomorphism-restriction -O -threaded -framework Foundation -i$SCRIPT_DIR/../"
 
 ##
 ## Build Process

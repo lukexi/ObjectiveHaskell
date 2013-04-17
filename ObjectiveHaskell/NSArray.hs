@@ -4,7 +4,7 @@
 
 -- | Bridging to and from @NSArray@
 module ObjectiveHaskell.NSArray (
-        fromNSArray, toNSArray
+        fromNSArray, toNSArray, listToNSArray
     ) where
 
 import Control.Monad
@@ -26,22 +26,24 @@ declMessage "objectAtIndex" [t| NSUInteger -> Id -> IO Id |] "objectAtIndex:"
 fromNSArray :: Id -> IO (Seq Id)
 fromNSArray arr = do
     c <- count arr
-
-    let fromNSArray' :: NSUInteger -> IO (Seq Id) -> IO (Seq Id)
-        fromNSArray' i s =
-            -- TODO: This should use something like fast enumeration instead (blocked on issue #1)
-            let s' = liftM2 (|>) s $ arr @. objectAtIndex i
-            in if i + 1 < c
-                then fromNSArray' (i + 1) s'
-                else s'
     
-    fromNSArray' 0 (return empty)
+    -- TODO: This should use something like fast enumeration instead (blocked on issue #1)
+    foldM (\s i -> do
+        obj <- arr @. objectAtIndex i
+        return $ s |> obj) empty [0..c-1]
 
 -- | Converts a 'Seq' into an immutable @NSArray@.
 toNSArray :: Seq Id -> IO Id
 toNSArray s = do
     arr <- getClass "NSMutableArray" >>= array
     mapM (\obj -> arr @. addObject obj) $ toList s
+
+    copy arr
+
+listToNSArray :: [Id] -> IO Id
+listToNSArray list = do
+    arr <- getClass "NSMutableArray" >>= array
+    mapM (\obj -> arr @. addObject obj) list
 
     copy arr
 

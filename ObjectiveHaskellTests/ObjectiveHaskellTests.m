@@ -22,6 +22,15 @@
 	STAssertEqualObjects(array, passthroughArray, @"");
 }
 
+- (void)testNSSetBridging {
+    NSSet *set = addFoobarToSet([NSSet setWithArray:@[ @5, @{} ]]);
+    NSSet *expectedSet = [NSSet setWithArray:@[ @5, @{}, @"foobar" ]];
+    STAssertEqualObjects(set, expectedSet, @"");
+    
+	NSSet *passthroughSet = [NSSet objectWithHaskellPointer:set.haskellPointer];
+	STAssertEqualObjects(set, passthroughSet, @"");
+}
+
 - (void)testNSDataBridging {
 	unsigned char bytes[] = { 1, 2, 3 };
 	NSData *data = appendByte([NSData dataWithBytes:bytes length:sizeof(bytes)], 5);
