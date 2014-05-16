@@ -1,6 +1,6 @@
 //
 //  NSSet+OHExtensions.m
-//  ObjectiveHaskell
+//  ObjectiveHaskellMini
 //
 //  Created by Luke Iannini on 11/18/12.
 //  Copyright (c) 2012 Justin Spahr-Summers. All rights reserved.

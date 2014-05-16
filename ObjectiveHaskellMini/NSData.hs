@@ -1,7 +1,8 @@
 {-# LANGUAGE Trustworthy #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 -- | Bridging to and from @NSData@
-module ObjectiveHaskell.NSData (
+module ObjectiveHaskellMini.NSData (
         fromNSData, toNSData
     ) where
 
@@ -11,41 +12,36 @@ import Foreign.C.Types
 import Foreign.Marshal.Array
 import Foreign.Ptr
 import Foreign.StablePtr
-import ObjectiveHaskell.ObjC
+import ObjectiveHaskellMini.ObjC
+import Control.Monad
 
 -- NSData methods
 foreign import ccall safe "dynamic" dataWithBytes_dyn
    :: FunPtr (UnsafeId -> Sel -> Ptr () -> NSUInteger -> IO UnsafeId)
      -> UnsafeId -> Sel -> Ptr () -> NSUInteger -> IO UnsafeId
 dataWithBytes :: Ptr () -> NSUInteger -> Class -> IO Id
-dataWithBytes a_aWu9 a_aWua self
-  = do { _cmd <- selector "dataWithBytes:length:";
-         ((withUnsafeId
-             self
-             (\ self
-                -> (dataWithBytes_dyn (castFunPtr p_objc_msgSend))
-                     self _cmd a_aWu9 a_aWua))
-          >>= retainedId) }
+dataWithBytes bytesPtr len self = do 
+    _cmd <- selector "dataWithBytes:length:";
+    (withUnsafeId self (\uSelf -> (dataWithBytes_dyn (castFunPtr p_objc_msgSend)) uSelf _cmd bytesPtr len))
+        >>= retainedId
+
 foreign import ccall safe "dynamic" objc_length_dyn
    :: FunPtr (UnsafeId -> Sel -> IO NSUInteger)
      -> UnsafeId -> Sel -> IO NSUInteger
 objc_length :: Id -> IO NSUInteger
-objc_length self
-  = do { _cmd <- selector "length";
-         withUnsafeId
-           self
-           (\ self
-              -> (objc_length_dyn (castFunPtr p_objc_msgSend)) self _cmd) }
+objc_length self = do
+    _cmd <- selector "length";
+    withUnsafeId self $ \uSelf -> 
+        (objc_length_dyn (castFunPtr p_objc_msgSend)) uSelf _cmd
+
 foreign import ccall safe "dynamic" bytes_dyn
    :: FunPtr (UnsafeId -> Sel -> IO (Ptr ()))
      -> UnsafeId -> Sel -> IO (Ptr ())
 bytes :: Id -> IO (Ptr ())
-bytes self
-  = do { _cmd <- selector "bytes";
-         withUnsafeId
-           self
-           (\ self
-              -> (bytes_dyn (castFunPtr p_objc_msgSend)) self _cmd) }
+bytes self = do
+    _cmd <- selector "bytes";
+    withUnsafeId self $ \uSelf -> 
+        (bytes_dyn (castFunPtr p_objc_msgSend)) uSelf _cmd
 
 -- | Converts an @NSData@ object into a lazy 'ByteString'.
 -- | Note that this /does not/ reuse the internal storage of the @NSData@ object, and so may not be suitable for large blobs.
@@ -73,13 +69,11 @@ fromNSDataObjC obj = fromNSData obj >>= newStablePtr
 toNSDataObjC :: StablePtr ByteString -> IO Id
 toNSDataObjC ptr = deRefStablePtr ptr >>= toNSData
 
-foreign export ccall "OHHaskellPtrFromNSData" _hs_OHHaskellPtrFromNSData
-  :: UnsafeId -> IO (StablePtr ByteString)
-_hs_OHHaskellPtrFromNSData dataObj
-  = do { dataObj <- retainedId dataObj;
-         fromNSDataObjC dataObj }
-foreign export ccall "OHNSDataFromHaskellPtr" _hs_OHNSDataFromHaskellPtr
-  :: StablePtr ByteString -> IO UnsafeId
-_hs_OHNSDataFromHaskellPtr bytestringPtr
-  = do { dataObj <- toNSDataObjC bytestringPtr;
-         autorelease dataObj }
+foreign export ccall "OHHaskellPtrFromNSData" _hs_OHHaskellPtrFromNSData :: UnsafeId -> IO (StablePtr ByteString)
+_hs_OHHaskellPtrFromNSData :: UnsafeId -> IO (StablePtr ByteString)
+_hs_OHHaskellPtrFromNSData = fromNSDataObjC <=< retainedId
+
+foreign export ccall "OHNSDataFromHaskellPtr" _hs_OHNSDataFromHaskellPtr :: StablePtr ByteString -> IO UnsafeId
+_hs_OHNSDataFromHaskellPtr :: StablePtr ByteString -> IO UnsafeId
+_hs_OHNSDataFromHaskellPtr = autorelease <=< toNSDataObjC
+

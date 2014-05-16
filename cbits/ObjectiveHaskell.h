@@ -1,6 +1,6 @@
 //
-//  ObjectiveHaskell.h
-//  ObjectiveHaskell
+//  ObjectiveHaskellMini.h
+//  ObjectiveHaskellMini
 //
 //  Created by Justin Spahr-Summers on 2012-07-13.
 //  Copyright (C) 2013 Justin Spahr-Summers.

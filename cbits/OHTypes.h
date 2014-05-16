@@ -1,6 +1,6 @@
 //
 //  OHTypes.h
-//  ObjectiveHaskell
+//  ObjectiveHaskellMini
 //
 //  Created by Justin Spahr-Summers on 2012-08-03.
 //  Copyright (C) 2013 Justin Spahr-Summers.

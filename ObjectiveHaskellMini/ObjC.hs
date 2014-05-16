@@ -1,10 +1,10 @@
 {-# LANGUAGE Trustworthy #-}
 
 -- | Objective-C bridging primitives
-module ObjectiveHaskell.ObjC (
+module ObjectiveHaskellMini.ObjC (
         Sel, Class, Id, UnsafeId,
         ObjCBool, NSUInteger,
-        Bridged, toObjC, fromObjC,
+        Bridged(..),
         selector, getClass,
         retainedId, unretainedId, nil, autorelease, withUnsafeId,
         p_objc_msgSend, (@.)
@@ -50,7 +50,7 @@ instance Bridged Id where
     toObjC = return
 
 instance Bridged a => Bridged (Maybe a) where
-    toObjC mv = maybe nil toObjC mv
+    toObjC = maybe nil toObjC
     fromObjC obj =
         withUnsafeId obj $ \ptr ->
             if ptr == nullPtr
@@ -76,11 +76,11 @@ unretainedId obj = Id <$> newForeignPtr_ obj
 -- | The resulting 'UnsafeId' can be used safely (by Haskell or Objective-C code) until the autorelease pool is drained.
 autorelease :: Id -> IO UnsafeId
 autorelease obj =
-    withUnsafeId obj $ \obj ->
-        if obj == nullPtr
-        then return $ obj
+    withUnsafeId obj $ \uObj ->
+        if uObj == nullPtr
+        then return $ uObj
         else do
-            u <- retain obj
+            u <- retain uObj
             sel <- selector "autorelease"
             autorelease_dyn (castFunPtr p_objc_msgSend) u sel
 
@@ -103,8 +103,8 @@ selector s = withCString s sel_registerName
 -- | Returns the Objective-C class by a given name.
 getClass :: String -> IO Class
 getClass name =
-    withCString name $ \name ->
-        objc_getClass name >>= unretainedId
+    withCString name $ \cName ->
+        objc_getClass cName >>= unretainedId
 
 {-|
 
