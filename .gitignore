@@ -5,3 +5,4 @@
 xcuserdata
 ObjectiveHaskell/ObjectiveHaskell.xcconfig
 ObjectiveHaskellTests/ObjectiveHaskellTests.xcconfig
+dist
