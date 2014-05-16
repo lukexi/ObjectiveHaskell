@@ -1,0 +1,15 @@
+To add as child project:
+*Add ObjectiveHaskellMini project to your project
+*Add ObjectiveHaskelliOS as dependecy
+*Link with ObjectiveHaskelliOS
+*Link with libiconv
+*Add ObjectiveHaskellMini/ObjectiveHaskell to Header Search Paths
+*Add /usr/local/lib/ghc-7.6.3/include/ to Header Search Paths
+*Turn off Dead Code Stripping
+*Add -ObjC to other linker flags
+
+
+To add more Haskell files:
+*Add "Run Script" build phase with:
+PATH=/Users/lukexi/bin:$PATH
+deth SpaceTimeHSBridge

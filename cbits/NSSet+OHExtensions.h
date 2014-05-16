@@ -8,7 +8,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ObjectiveHaskell/OHBridged.h>
+#import "OHBridged.h"
 
 @interface NSSet (OHExtensions) <OHBridged>
 @end

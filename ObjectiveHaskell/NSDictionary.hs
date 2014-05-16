@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE Trustworthy #-}
 
 -- | Bridging to and from @NSDictionary@
@@ -14,23 +13,82 @@ import Data.List
 import Data.Map as Map
 import Foreign.C.Types
 import Foreign.StablePtr
-import ObjectiveHaskell.TH.MsgSend
+import Foreign.Ptr
+import ObjectiveHaskell.ObjC
 import ObjectiveHaskell.NSArray
-import ObjectiveHaskell.TH.ObjC
 
 -- NSDictionary methods
-declMessage "allKeys" [t| Id -> IO Id |] "allKeys"
-declMessage "copy" [t| Id -> IO Id |] "copy"
-declMessage "dictionary" [t| Class -> IO Id |] "dictionary"
-declMessage "objectForKey" [t| Id -> Id -> IO Id |] "objectForKey:"
-declMessage "setObjectForKey" [t| Id -> Id -> Id -> IO () |] "setObject:forKey:"
+foreign import ccall safe "dynamic" allKeys_dyn_aTFt
+   :: FunPtr (UnsafeId -> Sel -> IO UnsafeId)
+     -> UnsafeId -> Sel -> IO UnsafeId
+allKeys :: Id -> IO Id
+allKeys self
+  = do { _cmd <- selector "allKeys";
+         ((withUnsafeId
+             self
+             (\ self
+                -> (allKeys_dyn_aTFt (castFunPtr p_objc_msgSend)) self _cmd))
+          >>= retainedId) }
+foreign import ccall safe "dynamic" copy_dyn_aTGl
+   :: FunPtr (UnsafeId -> Sel -> IO UnsafeId)
+     -> UnsafeId -> Sel -> IO UnsafeId
+copy :: Id -> IO Id
+copy self
+  = do { _cmd <- selector "copy";
+         ((withUnsafeId
+             self
+             (\ self -> (copy_dyn_aTGl (castFunPtr p_objc_msgSend)) self _cmd))
+          >>= retainedId) }
+foreign import ccall safe "dynamic" dictionary_dyn_aTHd
+   :: FunPtr (UnsafeId -> Sel -> IO UnsafeId)
+     -> UnsafeId -> Sel -> IO UnsafeId
+dictionary :: Class -> IO Id
+dictionary self
+  = do { _cmd <- selector "dictionary";
+         ((withUnsafeId
+             self
+             (\ self
+                -> (dictionary_dyn_aTHd (castFunPtr p_objc_msgSend)) self _cmd))
+          >>= retainedId) }
+foreign import ccall safe "dynamic" objectForKey_dyn_aTIk
+   :: FunPtr (UnsafeId -> Sel -> UnsafeId -> IO UnsafeId)
+     -> UnsafeId -> Sel -> UnsafeId -> IO UnsafeId
+objectForKey :: Id -> Id -> IO Id
+objectForKey a_aTIj self
+  = do { _cmd <- selector "objectForKey:";
+         ((withUnsafeId
+             self
+             (\ self
+                -> withUnsafeId
+                     a_aTIj
+                     (\ a_aTIj
+                        -> (objectForKey_dyn_aTIk (castFunPtr p_objc_msgSend))
+                             self _cmd a_aTIj)))
+          >>= retainedId) }
+foreign import ccall safe "dynamic" setObjectForKey_dyn_aTJA
+   :: FunPtr (UnsafeId -> Sel -> UnsafeId -> UnsafeId -> IO ())
+     -> UnsafeId -> Sel -> UnsafeId -> UnsafeId -> IO ()
+setObjectForKey :: Id -> Id -> Id -> IO ()
+setObjectForKey a_aTJy a_aTJz self
+  = do { _cmd <- selector "setObject:forKey:";
+         withUnsafeId
+           self
+           (\ self
+              -> withUnsafeId
+                   a_aTJy
+                   (\ a_aTJy
+                      -> withUnsafeId
+                           a_aTJz
+                           (\ a_aTJz
+                              -> (setObjectForKey_dyn_aTJA (castFunPtr p_objc_msgSend))
+                                   self _cmd a_aTJy a_aTJz))) }
 
 -- | Converts an @NSDictionary@ into a 'Map'.
 fromNSDictionary :: Id -> IO (Map Id Id)
 fromNSDictionary dict = do
     keys <- Foldable.toList <$> (dict @. allKeys >>= fromNSArray)
     vals <- mapM (\k -> dict @. objectForKey k) keys
-
+    
     return $ Map.fromList $ zip keys vals
 
 -- | Converts a 'Map' into an immutable @NSDictionary@.
@@ -51,5 +109,13 @@ fromNSDictionaryObjC obj = fromNSDictionary obj >>= newStablePtr
 toNSDictionaryObjC :: StablePtr (Map Id Id) -> IO Id
 toNSDictionaryObjC ptr = deRefStablePtr ptr >>= toNSDictionary
 
-exportFunc "OHHaskellPtrFromNSDictionary" [t| UnsafeId -> IO (StablePtr (Map Id Id)) |] 'fromNSDictionaryObjC
-exportFunc "OHNSDictionaryFromHaskellPtr" [t| StablePtr (Map Id Id) -> IO UnsafeId |] 'toNSDictionaryObjC
+foreign export ccall "OHHaskellPtrFromNSDictionary" _hs_OHHaskellPtrFromNSDictionary_aTLU
+  :: UnsafeId -> IO (StablePtr (Map Id Id))
+_hs_OHHaskellPtrFromNSDictionary_aTLU a_aTLS
+  = do { a_aTLS <- retainedId a_aTLS;
+         fromNSDictionaryObjC a_aTLS }
+foreign export ccall "OHNSDictionaryFromHaskellPtr" _hs_OHNSDictionaryFromHaskellPtr_aTNv
+  :: StablePtr (Map Id Id) -> IO UnsafeId
+_hs_OHNSDictionaryFromHaskellPtr_aTNv a_aTNt
+  = do { result_aTNu <- toNSDictionaryObjC a_aTNt;
+         autorelease result_aTNu }

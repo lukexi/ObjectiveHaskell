@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ObjectiveHaskell/OHTypes.h>
+#import "OHTypes.h"
 
 // Represents any class that can be bridged to and from Haskell.
 @protocol OHBridged <NSObject>

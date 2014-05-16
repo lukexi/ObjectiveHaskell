@@ -1,5 +1,5 @@
 //
-//  NSDictionary+OHExtensions.h
+//  NSArray+OHExtensions.h
 //  ObjectiveHaskell
 //
 //  Created by Justin Spahr-Summers on 08.08.12.
@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ObjectiveHaskell/OHBridged.h>
+#import "OHBridged.h"
 
-@interface NSDictionary (OHExtensions) <OHBridged>
+@interface NSArray (OHExtensions) <OHBridged>
 @end

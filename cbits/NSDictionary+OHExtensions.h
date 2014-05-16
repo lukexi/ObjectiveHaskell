@@ -1,5 +1,5 @@
 //
-//  NSNumber+OHExtensions.h
+//  NSDictionary+OHExtensions.h
 //  ObjectiveHaskell
 //
 //  Created by Justin Spahr-Summers on 08.08.12.
@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ObjectiveHaskell/OHBridged.h>
+#import "OHBridged.h"
 
-@interface NSNumber (OHExtensions) <OHBridged>
+@interface NSDictionary (OHExtensions) <OHBridged>
 @end

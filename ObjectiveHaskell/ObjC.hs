@@ -1,27 +1,20 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE Trustworthy #-}
 
 -- | Objective-C bridging primitives
-module ObjectiveHaskell.TH.ObjC (
+module ObjectiveHaskell.ObjC (
         Sel, Class, Id, UnsafeId,
         ObjCBool, NSUInteger,
         Bridged, toObjC, fromObjC,
         selector, getClass,
         retainedId, unretainedId, nil, autorelease, withUnsafeId,
-        p_objc_msgSend, objc_hash,
-        exportFunc
+        p_objc_msgSend, (@.)
     ) where
 
 import Control.Applicative
-import Control.Monad
 import Foreign.C.String
 import Foreign.C.Types
 import Foreign.ForeignPtr.Safe
-import Foreign.ForeignPtr.Unsafe
-import Foreign.Marshal.Unsafe
 import Foreign.Ptr
-import Language.Haskell.TH
-import ObjectiveHaskell.TH.Utils
 
 -- | An Objective-C @BOOL@.
 type ObjCBool = CSChar
@@ -42,23 +35,7 @@ type Imp = FunPtr (UnsafeId -> Sel -> IO UnsafeId)
 -- | An object reference that is being memory-managed by Haskell.
 -- | Objects of type Id will be retained for as long as any Haskell code holds a reference.
 newtype Id = Id (ForeignPtr ())
-    deriving Show
-
-instance Eq Id where
-    -- This depends on the return value of -isEqual: remaining the same across calls.
-    (Id a) == (Id b) =
-        unsafeLocalState $ do
-            sel <- selector "isEqual:"
-
-            let unsafeA = unsafeForeignPtrToPtr a
-                unsafeB = unsafeForeignPtrToPtr b
-            
-            eq <- isEqual_dyn (castFunPtr p_objc_msgSend) unsafeA sel unsafeB
-            return $ if eq == 0 then False else True
-
-instance Ord Id where
-    -- This is a silly way to do this, but Objective-C doesn't really have generalized comparison.
-    compare a b = compare (objc_hash a) (objc_hash b)
+    deriving (Eq, Show, Ord)
 
 -- | As in Objective-C, a Class is just an 'Id', but better documents its purpose in an function signature.
 type Class = Id
@@ -129,65 +106,27 @@ getClass name =
     withCString name $ \name ->
         objc_getClass name >>= unretainedId
 
--- | Returns the @-hash@ of an object.
--- | This function assumes that the object's hash will remain the same across calls.
-objc_hash :: Id -> NSUInteger
-objc_hash (Id obj) =
-    let unsafeObj = unsafeForeignPtrToPtr obj
-        ioHash = hash_dyn (castFunPtr p_objc_msgSend) unsafeObj =<< selector "hash"
-    in unsafeLocalState ioHash 
+{-|
 
--- | Creates statements that wrap 'UnsafeId' arguments as 'Id' values, rebinding them to the same name.
--- | This function is meant to be used with a right fold.
-bindUnsafeIds
-    :: (Type, Name) -- ^ The type and name of the argument to process.
-    -> [Stmt]       -- ^ A list of existing statements in the @do@ expression.
-    -> [Stmt]       -- ^ The new list of statements to use in the @do@ expression.
+Operator to simplify and clarify messaging syntax. This code:
 
-bindUnsafeIds (t, v) stmts
-    | t == ConT ''UnsafeId =
-        let retainExp = AppE (VarE 'retainedId) (VarE v)
-        in BindS (VarP v) retainExp : stmts
+@
+    somethingWithTwoArguments :: Id -> Id -> Id -> IO Id
+    somethingWithTwoArguments a b str = …
 
-    | otherwise = stmts
+    f :: Id -> Id -> Id -> IO Id
+    f str a b = somethingWithTwoArguments a b str
+@
 
--- | Defines a trampoline function which will automatically wrap 'UnstableId' values into 'Id' for Haskell,
--- | and unwrap any 'Id' return value as an 'UnstableId' for Objective-C.
-exportFunc
-    :: String   -- ^ The name of the trampoline function to export to Objective-C.
-    -> Q Type   -- ^ The type signature of the trampoline function.
-    -> Name     -- ^ The name of the Haskell function which should be invoked by the trampoline.
-    -> Q [Dec]  -- ^ Top-level declarations to generate and export the trampoline.
+becomes:
 
-exportFunc tramp qt funcName = do
-    t <- qt
+@
+    f str a b = str @. somethingWithTwoArguments a b
+@
 
-    let types = decomposeFunctionType t
-        paramTypes = init types
-        retType = last types
-
-    argNames <- argumentNames $ length paramTypes
-    resultName <- newName "result"
-
-    -- The name of the internal Haskell trampoline
-    tramp' <- newName $ "_hs_" ++ tramp
-
-    let applyExpr = foldl AppE (VarE funcName) $ map VarE argNames
-
-        -- If we're returning an IO UnsafeId, we should autorelease the result of the function
-        bodyStmts = if retType == (AppT (ConT ''IO) (ConT ''UnsafeId))
-                    then let binding = BindS (VarP resultName) applyExpr
-                             autoreleaseExp = AppE (VarE 'autorelease) (VarE resultName)
-                         in [binding, NoBindS autoreleaseExp]
-                    else [NoBindS applyExpr]
-
-        -- Map all UnsafeId arguments to Ids and bind them to the same names
-        bodyExpr = DoE $ foldr bindUnsafeIds bodyStmts $ zip paramTypes argNames
-        funcDef = singleClauseFunc tramp' argNames $ return bodyExpr
-
-        foreignDecl = ForeignD $ ExportF CCall tramp tramp' t
-
-    sequence $ (return foreignDecl) : [funcDef]
+-}
+(@.) :: Id -> (Id -> b) -> b
+(@.) = flip ($)
 
 -- Objective-C runtime functions
 
@@ -211,11 +150,3 @@ foreign import ccall safe "CoreFoundation/CoreFoundation.h &CFRelease"
 -- | Creates a trampoline function from a function pointer that matches the type of @-autorelease@.
 foreign import ccall safe "dynamic"
     autorelease_dyn :: FunPtr (UnsafeId -> Sel -> IO UnsafeId) -> (UnsafeId -> Sel -> IO UnsafeId)
-
--- | Creates a trampoline function from a function pointer that matches the type of @-isEqual:@.
-foreign import ccall safe "dynamic"
-    isEqual_dyn :: FunPtr (UnsafeId -> Sel -> UnsafeId -> IO ObjCBool) -> (UnsafeId -> Sel -> UnsafeId -> IO ObjCBool)
-
--- | Creates a trampoline function from a function pointer that matches the type of @-hash@.
-foreign import ccall safe "dynamic"
-    hash_dyn :: FunPtr (UnsafeId -> Sel -> IO NSUInteger) -> (UnsafeId -> Sel -> IO NSUInteger)
