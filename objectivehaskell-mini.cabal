@@ -34,7 +34,7 @@ library
   ld-options: -ObjC
   frameworks: Foundation
   include-dirs: dist/build/ObjectiveHaskellMini
-  cc-options: -fobjc-arc -DTARGET_OS_IPHONE=1
+  cc-options: -fobjc-arc
 
   c-sources:
     cbits/NSArray+OHExtensions.m,
