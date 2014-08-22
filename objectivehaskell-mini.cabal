@@ -33,7 +33,7 @@ library
   default-language:    Haskell2010
   ld-options: -ObjC
   frameworks: Foundation
-  include-dirs: dist/build/ObjectiveHaskellMini
+  include-dirs: include/ObjectiveHaskellMini
   cc-options: -fobjc-arc
   -- This places all the generated headers into a stable directory we can point to from Xcode
   ghc-options: -stubdir include
