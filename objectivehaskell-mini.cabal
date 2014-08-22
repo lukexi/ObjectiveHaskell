@@ -35,6 +35,8 @@ library
   frameworks: Foundation
   include-dirs: dist/build/ObjectiveHaskellMini
   cc-options: -fobjc-arc
+  -- This places all the generated headers into a stable directory we can point to from Xcode
+  ghc-options: -stubdir include
 
   c-sources:
     cbits/NSArray+OHExtensions.m,
