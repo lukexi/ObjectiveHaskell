@@ -8,7 +8,7 @@ module ObjectiveHaskellMini.NSArray (
     ) where
 
 import Control.Monad
-import Data.Foldable
+import Data.Foldable (toList)
 import Data.Sequence as Seq
 import Foreign.C.Types
 import Foreign.StablePtr
@@ -22,7 +22,7 @@ foreign import ccall safe "dynamic" array_dyn
 array :: Class -> IO Id
 array self = do
     _cmd <- selector "array";
-    ((withUnsafeId self (\uSelf -> 
+    ((withUnsafeId self (\uSelf ->
         array_dyn (castFunPtr p_objc_msgSend) uSelf _cmd))
         >>= retainedId)
 
@@ -30,10 +30,10 @@ foreign import ccall safe "dynamic" addObject_dyn
    :: FunPtr (UnsafeId -> Sel -> UnsafeId -> IO ())
      -> UnsafeId -> Sel -> UnsafeId -> IO ()
 addObject :: Id -> Id -> IO ()
-addObject object self = do 
+addObject object self = do
     _cmd <- selector "addObject:";
-    withUnsafeId self (\uSelf -> 
-        withUnsafeId object (\uObject -> 
+    withUnsafeId self (\uSelf ->
+        withUnsafeId object (\uObject ->
             addObject_dyn (castFunPtr p_objc_msgSend) uSelf _cmd uObject))
 
 foreign import ccall safe "dynamic" copy_dyn
@@ -42,7 +42,7 @@ foreign import ccall safe "dynamic" copy_dyn
 copy :: Id -> IO Id
 copy self = do
     _cmd <- selector "copy";
-    (withUnsafeId self (\uSelf -> 
+    (withUnsafeId self (\uSelf ->
         copy_dyn (castFunPtr p_objc_msgSend) uSelf _cmd))
         >>= retainedId
 
@@ -50,9 +50,9 @@ foreign import ccall safe "dynamic" count_dyn
    :: FunPtr (UnsafeId -> Sel -> IO NSUInteger)
      -> UnsafeId -> Sel -> IO NSUInteger
 count :: Id -> IO NSUInteger
-count self = do 
+count self = do
     _cmd <- selector "count";
-    withUnsafeId self (\uSelf -> 
+    withUnsafeId self (\uSelf ->
         count_dyn (castFunPtr p_objc_msgSend) uSelf _cmd)
 
 foreign import ccall safe "dynamic" objectAtIndex_dyn
@@ -61,29 +61,28 @@ foreign import ccall safe "dynamic" objectAtIndex_dyn
 objectAtIndex :: NSUInteger -> Id -> IO Id
 objectAtIndex anIndex self = do
     _cmd <- selector "objectAtIndex:";
-    (withUnsafeId self (\uSelf -> 
+    (withUnsafeId self (\uSelf ->
         objectAtIndex_dyn (castFunPtr p_objc_msgSend) uSelf _cmd anIndex))
         >>= retainedId
 
 -- | Converts an @NSArray@ into a 'Seq'.
-fromNSArray :: Id -> IO (Seq Id)
+fromNSArray :: Bridged e => Id -> IO (Seq e)
 fromNSArray arr = do
     c <- toInteger `liftM` count arr
-    
+
     -- TODO: This should use something like fast enumeration instead (blocked on issue #1)
     foldM (\s i -> do
-        obj <- arr @. objectAtIndex (fromInteger i)
+        obj <- fromObjC =<< arr @. objectAtIndex (fromInteger i)
         return $ s |> obj) empty [0..c-1]
 
 -- | Converts a 'Seq' into an immutable @NSArray@.
-toNSArray :: Seq Id -> IO Id
+toNSArray :: Bridged e => Seq e -> IO Id
 toNSArray s = do
     arr <- getClass "NSMutableArray" >>= array
-    mapM (\obj -> arr @. addObject obj) $ toList s
-
+    mapM_ (\obj -> do { objId <- toObjC obj;  arr @. addObject objId }) $ toList s
     copy arr
 
-instance Bridged (Seq Id) where
+instance Bridged e => Bridged (Seq e) where
     toObjC = toNSArray
     fromObjC = fromNSArray
 

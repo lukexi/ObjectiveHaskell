@@ -22,7 +22,7 @@ foreign import ccall safe "dynamic" set_dyn
 set :: Class -> IO Id
 set self = do
     _cmd <- selector "set"
-    (withUnsafeId self (\uSelf -> 
+    (withUnsafeId self (\uSelf ->
         set_dyn (castFunPtr p_objc_msgSend) uSelf _cmd))
         >>= retainedId
 
@@ -32,8 +32,8 @@ foreign import ccall safe "dynamic" addObject_dyn
 addObject :: Id -> Id -> IO ()
 addObject obj self = do
     _cmd <- selector "addObject:"
-    withUnsafeId self $ \uSelf -> 
-        withUnsafeId obj $ \uObj -> 
+    withUnsafeId self $ \uSelf ->
+        withUnsafeId obj $ \uObj ->
             addObject_dyn (castFunPtr p_objc_msgSend) uSelf _cmd uObj
 
 foreign import ccall safe "dynamic" copy_dyn
@@ -42,7 +42,7 @@ foreign import ccall safe "dynamic" copy_dyn
 copy :: Id -> IO Id
 copy self = do
     _cmd <- selector "copy"
-    (withUnsafeId self (\uSelf -> 
+    (withUnsafeId self (\uSelf ->
         copy_dyn (castFunPtr p_objc_msgSend) uSelf _cmd))
         >>= retainedId
 
@@ -52,7 +52,7 @@ foreign import ccall safe "dynamic" allObjects_dyn
 allObjects :: Id -> IO Id
 allObjects self = do
     _cmd <- selector "allObjects"
-    (withUnsafeId self (\uSelf -> 
+    (withUnsafeId self (\uSelf ->
         allObjects_dyn (castFunPtr p_objc_msgSend) uSelf _cmd))
         >>= retainedId
 
@@ -62,7 +62,7 @@ foreign import ccall safe "dynamic" count_dyn
 count :: Id -> IO NSUInteger
 count self = do
     _cmd <- selector "count";
-    withUnsafeId self $ \uSelf -> 
+    withUnsafeId self $ \uSelf ->
         count_dyn (castFunPtr p_objc_msgSend) uSelf _cmd
 
 -- NSArray methods
@@ -72,30 +72,29 @@ foreign import ccall safe "dynamic" objectAtIndex_dyn
 objectAtIndex :: NSUInteger -> Id -> IO Id
 objectAtIndex i self = do
     _cmd <- selector "objectAtIndex:";
-    (withUnsafeId self (\uSelf -> 
+    (withUnsafeId self (\uSelf ->
         objectAtIndex_dyn (castFunPtr p_objc_msgSend) uSelf _cmd i))
         >>= retainedId
 
 -- | Converts an @NSSet@ into a 'Set'.
-fromNSSet :: Id -> IO (Set Id)
+fromNSSet :: (Ord e, Bridged e) => Id -> IO (Set e)
 fromNSSet aSet = do
     c <- toInteger `liftM` count aSet
     setAsArray <- allObjects aSet
-    
+
     -- TODO: This should use something like fast enumeration instead (blocked on issue #1)
     foldM (\setSoFar i -> do
-        obj <- setAsArray @. objectAtIndex (fromInteger i)
+        obj <- fromObjC =<< setAsArray @. objectAtIndex (fromInteger i)
         return $ Set.insert obj setSoFar) Set.empty [0..c-1]
 
 -- | Converts a 'Set' into an immutable @NSSet@.
-toNSSet :: Set Id -> IO Id
+toNSSet :: (Ord e, Bridged e) => Set e -> IO Id
 toNSSet s = do
     aSet <- getClass "NSMutableSet" >>= set
-    mapM (\obj -> aSet @. addObject obj) $ Set.toList s
-
+    mapM_ (\obj -> do {objId <- toObjC obj; aSet @. addObject objId}) $ Set.toList s
     copy aSet
 
-instance Bridged (Set Id) where
+instance (Ord e, Bridged e) => Bridged (Set e) where
     toObjC = toNSSet
     fromObjC = fromNSSet
 
